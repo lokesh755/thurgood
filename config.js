@@ -14,7 +14,7 @@ configData.general = {
   apiVersion: "0.0.1",
   serverName: "Thurgood API",
   // id: "myActionHeroServer",                                    // id can be set here, or generated dynamically.  be sure that every server you run as a unique ID (which will happen when genrated dynamically)
-  serverToken: process.env.SERVER_TOKEN,                                       // A unique token to your application which servers will use to authenticate to eachother
+  serverToken: "Hy32GJs8y,6,^2[*2796;:%/3o(d",                                      // A unique token to your application which servers will use to authenticate to eachother
   welcomeMessage : "Hello! Welcome to the Thurgood!",        // The welcome message seen by TCP and webSocket clients upon connection
   flatFileDirectory: __dirname + "/public/",                      // The directory which will be the root for the /public route
   flatFileNotFoundMessage: "Sorry, that file is not found :(",    // The body message to acompany 404 (file not found) errors regading flat files
