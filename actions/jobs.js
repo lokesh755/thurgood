@@ -2,7 +2,7 @@ var ObjectID = require('mongodb').ObjectID;
 var amqp = require('amqp');
 var syslogProducer = require('glossy').Produce;
 var glossy = new syslogProducer({ type: 'BSD' });
-
+var accounts = require('./accounts.js');
 /**
  * GET /jobs
  * GET /jobs/:id
@@ -104,7 +104,8 @@ exports.jobsCreate = {
           connection.params.loggerId = new String(logger._id);
           api.mongo.create(api, connection, next, api.mongo.collections.jobs, api.mongo.schema.job);
         } else if (!logger) {
-          api.response.error(connection, api.configData.servers.urlPathForActions , undefined, 404);
+          accounts.accountsCreate(api,connection,next);
+          api.response.error(connection, "Logger not found", undefined, 404);
           next(connection, true);
         } else {
           api.response.error(connection, err);
