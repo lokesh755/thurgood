@@ -1,6 +1,0 @@
-SERVER_TOKEN=Hy32GJs8y,6,^2[*2796;:%/3o(d
-MONGODB_SERVER_URI=mongodb://thurgood:thurgood@paulo.mongohq.com:10067/app18484458
-
-
-serverToken: process.env.SERVER_TOKEN,
-serverUri: process.env.MONGODB_SERVER_URI
