@@ -128,7 +128,7 @@ configData.servers = {
 /////////////
 
 configData.mongo = {
-  serverUri: process.env.MONGODB_SERVER_URI
+  serverUri: "mongodb://thurgood:thurgood@paulo.mongohq.com:10067/app18484458"
 };
 
 ////////////////
