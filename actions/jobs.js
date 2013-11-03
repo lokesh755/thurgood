@@ -104,7 +104,7 @@ exports.jobsCreate = {
           connection.params.loggerId = new String(logger._id);
           api.mongo.create(api, connection, next, api.mongo.collections.jobs, api.mongo.schema.job);
         } else if (!logger) {
-          api.response.error(connection, "Lokesh: This is the error", undefined, 404);
+          api.response.error(connection, api.configData.servers.urlPathForActions , undefined, 404);
           next(connection, true);
         } else {
           api.response.error(connection, err);
