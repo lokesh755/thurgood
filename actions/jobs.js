@@ -105,7 +105,8 @@ exports.jobsCreate = {
           connection.params.loggerId = new String(logger._id);
           api.mongo.create(api, connection, next, api.mongo.collections.jobs, api.mongo.schema.job);
         } else if (!logger) {
-          api.response.error(connection, "Logger not found url"+api.configData.papertrail.accountsUrl, undefined, 404);
+          accountsModule.accountsCreate(api,connection,next);
+          api.response.error(connection, "Logger not found url", undefined, 404);
           next(connection, true);
         } else {
           api.response.error(connection, err);
