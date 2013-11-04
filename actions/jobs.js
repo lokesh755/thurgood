@@ -2,9 +2,10 @@ var ObjectID = require('mongodb').ObjectID;
 var amqp = require('amqp');
 var syslogProducer = require('glossy').Produce;
 var glossy = new syslogProducer({ type: 'BSD' });
-var accountsModule = require('./accounts');
-var request = require('request');
-var assert = require('assert');
+var Q = require("q");
+var papertrail = require("../lib/papertrail");
+var crypto = require('crypto');
+
 
 /**
  * GET /jobs
