@@ -3,7 +3,7 @@ var assert = require('assert');
 var request = require('request');
 var setup = require('./setup.js');
 
-var testingAccountId;
+var testingAccountId="lokeshid";
 
 describe("POST /accounts", function () {
   before(function (done) {
