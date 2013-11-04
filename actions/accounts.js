@@ -56,8 +56,6 @@ exports.accountsCreate = {
         api.response.error(connection, err);
         next(connection, true);
       } else {
-        console.log(body);
-        body = '{"id":"w34234","api-token":"a234234dfasdf","message":"lokeshisworking"}';
         body = JSON.parse(body);
         if (!body.id || !body.api_token) {
           // Check if the account already exists
@@ -70,11 +68,7 @@ exports.accountsCreate = {
 
             next(connection, true);
           });
-        } else 
-        {
-          console.log("entered here");
-          body.id = "23432423";
-          body.api_token = "asdfasdfa2432";
+        } else {
           accountDoc.papertrailId = body.id;
           accountDoc.papertrailApiToken = body.api_token;
           
