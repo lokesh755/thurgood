@@ -225,19 +225,9 @@ exports.jobsCreate = {
     // Insert document into the database
     function insertLogger(logger) {
        console.log("[LoggerCreate]", "Insert Logger to DB : " + logger);
-      // var deferred = Q.defer();
-      // collection.insert(logger, deferred.makeNodeResolver());
-      // return deferred.promise;
-
-      api.mongo.collections.loggerSystems.insert(logger, { w:1 }, function(err, result) {
-                  if (!err) {
-                    console.log("loggerSystem created successfully");
-                  } else {
-                    api.response.error(connection, "loggerSystem couldn't be created "+err, undefined, 404);
-                  }
-
-                  
-                });
+       var deferred = Q.defer();
+       collection.insert(logger, deferred.makeNodeResolver());
+       return deferred.promise;   
     }
 
     function insertJob(logger) {
