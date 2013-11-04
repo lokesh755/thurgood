@@ -94,7 +94,7 @@ exports.jobsCreate = {
   description: "Creates a new job. Method: POST",
   inputs: {
     required: ['email', 'platform', 'language', 'userId', 'codeUrl'],
-    optional: ['loggerId', 'logger', 'options'],
+    optional: ['loggerId', 'logger', 'options','papertrailId'],
   },
   authenticated: false,
   outputExample: {},
@@ -107,9 +107,66 @@ exports.jobsCreate = {
           connection.params.loggerId = new String(logger._id);
           api.mongo.create(api, connection, next, api.mongo.collections.jobs, api.mongo.schema.job);
         } else if (!logger) {
+           
 
-          createLogger();
-          api.response.error(connection, "Logger not found url ", undefined, 404);
+            var accountDoc = api.mongo.schema.new(api.mongo.schema.loggerAccount);
+            accountDoc.name = connection.params.userId;
+            accountDoc.email = connection.params.email;
+            accountDoc.papertrailId = connection.params.papertrailId || accountDoc.name;
+
+            var params = {
+              id: accountDoc.papertrailId,
+              name: accountDoc.name,
+              plan: "free",
+              user: {
+                id: accountDoc.name,
+                email: accountDoc.email
+              }
+            };
+          
+          request.post({ url: api.configData.papertrail.accountsUrl , form: params, auth: api.configData.papertrail.auth }, function (err, response, body) {
+            if (err) {
+              api.response.error(connection, err);
+              next(connection, true);
+            } else {
+              body = '{"id":"w34234","api-token":"a234234dfasdf","message":"lokeshisworking"}';
+              body = JSON.parse(body);
+              // if (!body.id || !body.api_token) {
+              //   // Check if the account already exists
+              //   api.mongo.collections.loggerAccounts.findOne({ name: connection.params.username }, function(err, account) {
+              //     if (!err && account) {
+              //       api.response.success(connection, "Account already exists", account, 200);
+              //     } else {
+              //       api.response.error(connection, body.message);
+              //     }
+
+              //     next(connection, true);
+              //   });
+              // } else 
+              {
+                console.log("entered here");
+                body.id = "23432423";
+                body.api_token = "asdfasdfa2432";
+                accountDoc.papertrailId = body.id;
+                accountDoc.papertrailApiToken = body.api_token;
+                
+                // Insert document into the database
+                api.mongo.collections.loggerAccounts.insert(accountDoc, { w:1 }, function(err, result) {
+                  if (!err) {
+                    api.response.success(connection, "Account created successfully", result, 201);
+                  } else {
+                    api.response.error(connection, err);
+                  }
+
+                  next(connection, true);
+                });
+              }
+            }
+          });
+
+
+
+          //api.response.error(connection, "Logger not found url ", undefined, 404);
           next(connection, true);
         } else {
           api.response.error(connection, err);
@@ -137,8 +194,8 @@ exports.jobsCreate = {
 
     function buildLogger() {
       var logger = api.mongo.schema.new(api.mongo.schema.loggerSystem);
-      logger.name = connection.params.name;
-      logger.loggerAccountId = connection.params.loggerAccountId;
+      logger.name = connection.params.logger;
+      logger.loggerAccountId = connection.params.loggerId;
       logger.papertrailId = connection.params.papertrailId || crypto.randomBytes(16).toString('hex');
       return logger;
     }
