@@ -68,6 +68,7 @@ exports.loggersCreate = {
     // 2. create logger in the db
     // 3. respond with the created logger
     function createLogger() {
+      console.log("entered 1");
       Q.all([api, buildLogger()])
         .spread(papertrail.createLogger)
         .then(insertLogger)
@@ -77,6 +78,7 @@ exports.loggersCreate = {
     }
 
     function buildLogger() {
+      console.log("Entered 2");
       var logger = api.mongo.schema.new(api.mongo.schema.loggerSystem);
       logger.name = connection.params.name;
       logger.loggerAccountId = connection.params.loggerAccountId;
