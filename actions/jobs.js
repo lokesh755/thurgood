@@ -108,7 +108,7 @@ exports.jobsCreate = {
         } else if (!logger) {
 
           console.log("Lokesh is watching"); 
-          api.response.error(connection, "Logger not found url "accountsModule.testingAccountId, undefined, 404);
+          api.response.error(connection, "Logger not found url "+accountsModule.testingAccountId, undefined, 404);
           next(connection, true);
         } else {
           api.response.error(connection, err);
