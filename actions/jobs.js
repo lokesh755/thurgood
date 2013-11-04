@@ -3,7 +3,8 @@ var amqp = require('amqp');
 var syslogProducer = require('glossy').Produce;
 var glossy = new syslogProducer({ type: 'BSD' });
 var accountsModule = require('./accounts');
-
+var request = require('request');
+var assert = require('assert');
 
 /**
  * GET /jobs
