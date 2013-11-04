@@ -149,8 +149,8 @@ configData.papertrail = {
 //////////////
 
 configData.rabbitmq = {
-  url: process.env.RABBITMQ_URL,
-  queue: process.env.RABBITMQ_QUEUE
+  url: "amqp://rToOqkfc:ewwiOqTFj9ZpnlculRYd2kS-AOh5zCvM@black-ragwort-7.bigwig.lshift.net:10499/K1Scv5hsRTKy",
+  queue: "cloudspokes.lokesh"
 };
 
 //////////////////////////////////

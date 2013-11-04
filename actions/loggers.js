@@ -23,7 +23,7 @@ exports.action = {
 };
 
 /**
- * POST /logger
+ * POST /loggers
  */
 exports.loggersCreate = {
   name: "loggersCreate",
