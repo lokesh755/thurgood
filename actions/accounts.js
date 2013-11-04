@@ -56,7 +56,7 @@ exports.accountsCreate = {
         api.response.error(connection, err);
         next(connection, true);
       } else {
-        console.log("Data from papertrail: "+body);
+        body = '{"id":"w34234","api-token":"a234234dfasdf","message":"lokeshisworking"}';
         body = JSON.parse(body);
         if (!body.id || !body.api_token) {
           // Check if the account already exists
