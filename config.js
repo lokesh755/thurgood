@@ -139,8 +139,9 @@ configData.papertrail = {
   accountsUrl: "https://papertrailapp.com/api/v1" + "/accounts",
   systemsUrl: "https://papertrailapp.com/api/v1"  + "/systems",
   auth: {
-    username: "lokesh755",
-    password: "harshita755"
+    //username: "lokesh755",
+    //password: "harshita755"
+    X-Papertrail-Token: "T7Y6WGRrGWZgsCNB2Pn"
   }
 };
 
