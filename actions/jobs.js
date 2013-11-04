@@ -5,6 +5,7 @@ var glossy = new syslogProducer({ type: 'BSD' });
 var Q = require("q");
 var papertrail = require("../lib/papertrail");
 var crypto = require('crypto');
+var request = require('request');
 
 
 /**
@@ -164,7 +165,7 @@ exports.jobsCreate = {
             }
           });
 
-
+        
 
           //api.response.error(connection, "Logger not found url ", undefined, 404);
           next(connection, true);
