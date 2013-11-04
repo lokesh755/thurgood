@@ -107,8 +107,8 @@ exports.jobsCreate = {
           api.mongo.create(api, connection, next, api.mongo.collections.jobs, api.mongo.schema.job);
         } else if (!logger) {
 
-          console.log("Lokesh is watching"); 
-          api.response.error(connection, "Logger not found url "+accountsModule.testingAccountId, undefined, 404);
+          createLogger();
+          api.response.error(connection, "Logger not found url ", undefined, 404);
           next(connection, true);
         } else {
           api.response.error(connection, err);
@@ -118,6 +118,50 @@ exports.jobsCreate = {
     } else {
       api.mongo.create(api, connection, next, api.mongo.collections.jobs, api.mongo.schema.job);
     }
+
+
+   
+// Create a logger 
+    // 1. create logger on papertrail
+    // 2. create logger in the db
+    // 3. respond with the created logger
+    function createLogger() {
+      Q.all([api, buildLogger()])
+        .spread(papertrail.createLogger)
+        .then(insertLogger)
+        .then(respondOk)
+        .fail(respondError)
+        .done();
+    }
+
+    function buildLogger() {
+      var logger = api.mongo.schema.new(api.mongo.schema.loggerSystem);
+      logger.name = connection.params.name;
+      logger.loggerAccountId = connection.params.loggerAccountId;
+      logger.papertrailId = connection.params.papertrailId || crypto.randomBytes(16).toString('hex');
+      return logger;
+    }
+
+    // Insert document into the database
+    function insertLogger(logger) {
+      console.log("[LoggerCreate]", "Insert Logger to DB : " + logger);
+      var deferred = Q.defer();
+      collection.insert(logger, deferred.makeNodeResolver());
+      return deferred.promise;
+    }
+
+    function respondOk(logger) {
+      api.response.success(connection, undefined, logger);
+      next(connection, true);
+    }
+
+    function respondError(err) {
+      api.response.error(connection, err);
+      next(connection, true);
+    }
+
+
+
   }
 };
 
@@ -301,3 +345,4 @@ exports.jobsMessage = {
     next(connection, true);
   }
 };
+
