@@ -2,11 +2,6 @@ var ObjectID = require('mongodb').ObjectID;
 var amqp = require('amqp');
 var syslogProducer = require('glossy').Produce;
 var glossy = new syslogProducer({ type: 'BSD' });
-var Q = require("q");
-var papertrail = require("../lib/papertrail");
-var crypto = require('crypto');
-var request = require('request');
-
 
 /**
  * GET /jobs
@@ -19,7 +14,7 @@ exports.action = {
     required: [],
     optional: ['q', 'fields', 'sort', 'limit', 'skip', 'id'],
   },
-  authenticated: false,
+  authenticated: true,
   outputExample: {},
   version: 1.0,
   run: function(api, connection, next) {
@@ -37,11 +32,11 @@ exports.jobsComplete = {
     required: ['id'],
     optional: [],
   },
-  authenticated: false,
+  authenticated: true,
   outputExample: {},
   version: 1.0,
   run: function(api, connection, next) {
-    var selector, collection = api.mongo.collections.loggerSystems;
+    var selector;
 
     // Validate id and build selector
     try {
@@ -95,9 +90,9 @@ exports.jobsCreate = {
   description: "Creates a new job. Method: POST",
   inputs: {
     required: ['email', 'platform', 'language', 'userId', 'codeUrl'],
-    optional: ['loggerId', 'logger', 'options','papertrailId'],
+    optional: ['loggerId', 'logger', 'options'],
   },
-  authenticated: false,
+  authenticated: true,
   outputExample: {},
   version: 1.0,
   run: function(api, connection, next) {
@@ -108,66 +103,7 @@ exports.jobsCreate = {
           connection.params.loggerId = new String(logger._id);
           api.mongo.create(api, connection, next, api.mongo.collections.jobs, api.mongo.schema.job);
         } else if (!logger) {
-           
-
-            var accountDoc = api.mongo.schema.new(api.mongo.schema.loggerAccount);
-            accountDoc.name = connection.params.userId;
-            accountDoc.email = connection.params.email;
-            accountDoc.papertrailId = connection.params.papertrailId || accountDoc.name;
-
-            var params = {
-              id: accountDoc.papertrailId,
-              name: accountDoc.name,
-              plan: "free",
-              user: {
-                id: accountDoc.name,
-                email: accountDoc.email
-              }
-            };
-          
-          request.post({ url: api.configData.papertrail.accountsUrl , form: params, auth: api.configData.papertrail.auth }, function (err, response, body) {
-            if (err) {
-              api.response.error(connection, err);
-              next(connection, true);
-            } else {
-              
-              body = JSON.parse(body);
-              if (!body.id || !body.api_token) {
-                // Check if the account already exists
-                api.mongo.collections.loggerAccounts.findOne({ name: connection.params.userId }, function(err, account) {
-                  if (!err && account) {
-                    console.log("Account already exists");
-                    verifyLoggerAccount();
-                  } else {
-                    api.response.error(connection, body.message);
-                  }
-
-                  next(connection, true);
-                });
-              } else 
-              {
-                accountDoc.papertrailId = body.id;
-                accountDoc.papertrailApiToken = body.api_token;
-                
-                // Insert document into the database
-                api.mongo.collections.loggerAccounts.insert(accountDoc, { w:1 }, function(err, result) {
-                  if (!err) {
-                    console.log("Account created successfully");
-                    verifyLoggerAccount();
-                  } else {
-                    api.response.error(connection, "Account couldn't be created "+err, undefined, 404);
-                  }
-
-                  
-                });
-              }
-            }
-          });
-
-          
-          
-
-          //api.response.error(connection, "Logger not found url ", undefined, 404);
+          api.response.error(connection, "Logger not found", undefined, 404);
           next(connection, true);
         } else {
           api.response.error(connection, err);
@@ -177,98 +113,6 @@ exports.jobsCreate = {
     } else {
       api.mongo.create(api, connection, next, api.mongo.collections.jobs, api.mongo.schema.job);
     }
-
-
-  function verifyLoggerAccount()
-  {
-    api.mongo.collections.loggerAccounts.findOne({ name: connection.params.userId}, { _id:1 }, function(err, loggerAccount) {
-          if (!err && loggerAccount) {
-             
-             console.log("Corresponding logger account is found");
-             connection.params.loggerAccountId = new String(loggerAccount._id);
-             createLogger();
-
-             
-          }
-          else if (!loggerAccount) {
-          
-             console.log("corresponding loggeraccount is not found");
-             api.response.error(connection, "Account couldn't be found "+err, undefined, 404);
-          
-          }  
-          else
-          {
-            api.response.error(connection, err);
-          }
-         });
-  }
-   
-// Create a logger 
-    // 1. create logger on papertrail
-    // 2. create logger in the db
-    // 3. respond with the created logger
-    function createLogger() {
-      Q.all([api, buildLogger()])
-        .spread(papertrail.createLogger)
-        .then(insertLogger)
-        .then(insertJob);
-    }
-
-    function buildLogger() {
-      var logger = api.mongo.schema.new(api.mongo.schema.loggerSystem);
-      logger.name = connection.params.logger;
-      logger.loggerAccountId = connection.params.loggerAccountId;
-      logger.papertrailId = connection.params.papertrailId || crypto.randomBytes(16).toString('hex');
-      return logger;
-    }
-
-    // Insert document into the database
-    function insertLogger(logger) {
-       console.log("[LoggerCreate]", "Insert Logger to DB : " + logger);
-      //== var deferred = Q.defer();
-      // collection.insert(logger, deferred.makeNodeResolver());
-      // return deferred.promise;
-
-      api.mongo.collections.loggerSystems.insert(logger, { w:1 }, function(err, result) {
-                  if (!err) {
-                    console.log("loggerSystem created successfully");
-                  } else {
-                    api.response.error(connection, "loggerSystem couldn't be created "+err, undefined, 404);
-                  }
-
-                  
-                });
-    }
-
-    function insertJob(logger) {
-      console.log("[LoggerSystemCreate]", "Inserting Job to DB : " + logger);
-      console.log("Querying for loggerSystem");
-             api.mongo.collections.loggerSystems.findOne({ name: connection.params.logger }, { _id:1 }, function(err, loggerSystem) {
-             
-               if (!err && loggerSystem) {
-                  console.log("Started Creating job");
-                  connection.params.loggerId = new String(loggerSystem._id);
-                  api.mongo.create(api, connection, next, api.mongo.collections.jobs, api.mongo.schema.job);
-                  console.log("Job created successfully");
-                } else if (!logger) {
-                  api.response.error(connection, err);
-                }
-             
-             });
-    }
-
-    function respondOk(logger) {
-      api.response.success(connection, undefined, logger);
-      next(connection, true);
-    }
-
-    function respondError(err) {
-      api.response.error(connection, err);
-      next(connection, true);
-    }
-
-
-
   }
 };
 
@@ -282,7 +126,7 @@ exports.jobsMessage = {
     required: ['id', 'message'],
     optional: ['facility', 'severity'],
   },
-  authenticated: false,
+  authenticated: true,
   outputExample: {},
   version: 1.0,
   run: function(api, connection, next) {
@@ -341,7 +185,7 @@ exports.jobsSubmit = {
     required: ['id'],
     optional: [],
   },
-  authenticated: false,
+  authenticated: true,
   outputExample: {},
   version: 1.0,
   run: function(api, connection, next) {
@@ -425,7 +269,7 @@ exports.jobsUpdate = {
     required: ['id'],
     optional: ['status', 'email', 'platform', 'language', 'papertrailSystem', 'userId', 'codeUrl', 'options', 'startTime', 'endTime'],
   },
-  authenticated: false,
+  authenticated: true,
   outputExample: {},
   version: 1.0,
   run: function(api, connection, next) {
@@ -443,7 +287,7 @@ exports.jobsMessage = {
     required: ['message'],
     optional: [],
   },
-  authenticated: false,
+  authenticated: true,
   outputExample: {},
   version: 1.0,
   run: function(api, connection, next) {
@@ -452,4 +296,3 @@ exports.jobsMessage = {
     next(connection, true);
   }
 };
-
