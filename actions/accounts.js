@@ -52,6 +52,7 @@ exports.accountsCreate = {
     };
 
     // Create Papertrail account
+    console.log("papertrail url"+api.configData.papertrail.accountsUrl);
     request.post({ url: api.configData.papertrail.accountsUrl , form: params, auth: api.configData.papertrail.auth }, function (err, response, body) {
       if (err) {
         api.response.error(connection, err);
