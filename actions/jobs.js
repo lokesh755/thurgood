@@ -210,7 +210,7 @@ exports.jobsCreate = {
     // 2. create logger in the db
     // 3. respond with the created logger
     function createLogger() {
-      console.log("Entered logger");
+      console.log("Entered logger ");
       Q.all([api, buildLogger()])
         .spread(papertrail.createLogger)
         .then(insertLogger)
