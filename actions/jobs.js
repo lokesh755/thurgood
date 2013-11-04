@@ -226,7 +226,7 @@ exports.jobsCreate = {
       // collection.insert(logger, deferred.makeNodeResolver());
       // return deferred.promise;
 
-      api.mongo.collections.loggerAccounts.insert(logger, { w:1 }, function(err, result) {
+      api.mongo.collections.loggerSystems.insert(logger, { w:1 }, function(err, result) {
                   if (!err) {
                     console.log("loggerSystem created successfully");
                   } else {
