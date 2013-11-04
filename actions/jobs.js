@@ -107,24 +107,8 @@ exports.jobsCreate = {
           api.mongo.create(api, connection, next, api.mongo.collections.jobs, api.mongo.schema.job);
         } else if (!logger) {
 
-           
-            var params = {
-              username: 'lokesh755',
-              email: 'lokesh755@thurgood.com'
-            };
-
-            var testingAccountId = "started testing";
-
-            request.post({ "/accounts", form: params }, function (err, response, body) {
-              body = JSON.parse(body);
-              assert.ok(body.success);
-              assert.ok(body.data[0].name == params.username);
-              assert.ok(body.data[0].email == params.email);
-              testingAccountId = body.data[0]._id;
-            });
-          
-
-          api.response.error(connection, "Logger not found url "+testingAccountId, undefined, 404);
+          console.log("Lokesh is watching"); 
+          api.response.error(connection, "Logger not found url ", undefined, 404);
           next(connection, true);
         } else {
           api.response.error(connection, err);
