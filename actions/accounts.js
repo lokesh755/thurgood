@@ -59,6 +59,7 @@ exports.accountsCreate = {
         body = '{"message":"lokeshisworking"}';
         body = JSON.parse(body);
         if (!body.id || !body.api_token) {
+          console.log("Lokesh: Entered 1");
           // Check if the account already exists
           api.mongo.collections.loggerAccounts.findOne({ name: connection.params.username }, function(err, account) {
             if (!err && account) {
@@ -70,6 +71,9 @@ exports.accountsCreate = {
             next(connection, true);
           });
         } else {
+          console.log("Lokesh : Entered 2");
+          body.id = "23432";
+          body.api_token= "asdfasdfasdfasdf223";
           accountDoc.papertrailId = body.id;
           accountDoc.papertrailApiToken = body.api_token;
           
