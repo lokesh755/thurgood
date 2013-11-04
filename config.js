@@ -136,8 +136,8 @@ configData.mongo = {
 ////////////////
 
 configData.papertrail = {
-  accountsUrl: "https://papertrailapp.com/api/v1" + "/accounts",
-  systemsUrl: "https://papertrailapp.com/api/v1"  + "/systems",
+  accountsUrl: "http://obscure-chamber-6858.herokuapp.com/api/1" + "/accounts",
+  systemsUrl: "http://obscure-chamber-6858.herokuapp.com/api/1"  + "/systems",
   auth: {
     username: "lokesh755@gmail.com",
     password: "harshita755"
