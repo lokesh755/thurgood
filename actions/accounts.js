@@ -21,6 +21,8 @@ exports.action = {
   }
 };
 
+exports.returncheck = function(){ return "testing fine!"; }
+
 /**
  * POST /accounts
  */

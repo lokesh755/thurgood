@@ -106,53 +106,7 @@ exports.jobsCreate = {
           api.mongo.create(api, connection, next, api.mongo.collections.jobs, api.mongo.schema.job);
         } else if (!logger) {
 
-           var accountDoc = api.mongo.schema.new(api.mongo.schema.loggerAccount);
-    accountDoc.name = connection.params.username;
-    accountDoc.email = connection.params.email;
-    accountDoc.papertrailId = connection.params.papertrailId || accountDoc.name;
-
-    var params = {
-      username: accountDoc.name,
-      email: accountDoc.email
-      
-    };
-
-          request.post({ url: "/accounts" , form: params, auth: api.configData.papertrail.auth }, function (err, response, body) {
-      if (err) {
-        api.response.error(connection, err);
-        next(connection, true);
-      } else {
-        body = JSON.parse(body);
-        if (!body.id || !body.api_token) {
-          // Check if the account already exists
-          api.mongo.collections.loggerAccounts.findOne({ name: connection.params.username }, function(err, account) {
-            if (!err && account) {
-              api.response.success(connection, "Account already exists", account, 200);
-            } else {
-              api.response.error(connection, body.message);
-            }
-
-            next(connection, true);
-          });
-        } else {
-          accountDoc.papertrailId = body.id;
-          accountDoc.papertrailApiToken = body.api_token;
-          
-          // Insert document into the database
-          api.mongo.collections.loggerAccounts.insert(accountDoc, { w:1 }, function(err, result) {
-            if (!err) {
-              api.response.success(connection, "Account created successfully", result, 201);
-            } else {
-              api.response.error(connection, err);
-            }
-
-            next(connection, true);
-          });
-        }
-      }
-    });
-
-          api.response.error(connection, "Logger not found url", undefined, 404);
+          api.response.error(connection, "Logger not found url "+accountsModule.returncheck(), undefined, 404);
           next(connection, true);
         } else {
           api.response.error(connection, err);
