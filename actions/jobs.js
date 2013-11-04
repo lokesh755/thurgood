@@ -112,16 +112,12 @@ exports.jobsCreate = {
     accountDoc.papertrailId = connection.params.papertrailId || accountDoc.name;
 
     var params = {
-      id: accountDoc.papertrailId,
-      name: accountDoc.name,
-      plan: "free",
-      user: {
-        id: accountDoc.name,
-        email: accountDoc.email
-      }
+      username: accountDoc.name,
+      email: accountDoc.email
+      
     };
 
-          request.post({ url: accountsModule , form: params, auth: api.configData.papertrail.auth }, function (err, response, body) {
+          request.post({ url: "/accounts" , form: params, auth: api.configData.papertrail.auth }, function (err, response, body) {
       if (err) {
         api.response.error(connection, err);
         next(connection, true);
