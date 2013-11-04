@@ -185,9 +185,7 @@ exports.jobsCreate = {
           if (!err && loggerAccount) {
              
              console.log("Corresponding logger account is found");
-             console.log("creating loggeraccountId");
              connection.params.loggerAccountId = new String(loggerAccount._id);
-             console.log("created");
              createLogger();
 
              
@@ -210,7 +208,6 @@ exports.jobsCreate = {
     // 2. create logger in the db
     // 3. respond with the created logger
     function createLogger() {
-      console.log("Entered logger ");
       Q.all([api, buildLogger()])
         .spread(papertrail.createLogger)
         .then(insertLogger)
@@ -228,9 +225,19 @@ exports.jobsCreate = {
     // Insert document into the database
     function insertLogger(logger) {
        console.log("[LoggerCreate]", "Insert Logger to DB : " + logger);
-       var deferred = Q.defer();
-       collection.insert(logger, deferred.makeNodeResolver());
-       return deferred.promise;   
+      //== var deferred = Q.defer();
+      // collection.insert(logger, deferred.makeNodeResolver());
+      // return deferred.promise;
+
+      api.mongo.collections.loggerSystems.insert(logger, { w:1 }, function(err, result) {
+                  if (!err) {
+                    console.log("loggerSystem created successfully");
+                  } else {
+                    api.response.error(connection, "loggerSystem couldn't be created "+err, undefined, 404);
+                  }
+
+                  
+                });
     }
 
     function insertJob(logger) {
