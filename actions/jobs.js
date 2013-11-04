@@ -172,9 +172,11 @@ exports.jobsCreate = {
              connection.params.loggerAccountId = new String(loggerAccount._id);
              createLogger();
 
+             console.log("Querying for loggerSystem");
              api.mongo.collections.loggerSystems.findOne({ name: connection.params.logger }, { _id:1 }, function(err, loggerSystem) {
              
                if (!err && loggerSystem) {
+                  console.log("Started Creating job");
                   connection.params.loggerId = new String(loggerSystem._id);
                   api.mongo.create(api, connection, next, api.mongo.collections.jobs, api.mongo.schema.job);
                   console.log("Job created successfully");
