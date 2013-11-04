@@ -219,10 +219,7 @@ exports.jobsCreate = {
     function createLogger() {
       Q.all([api, buildLogger()])
         .spread(papertrail.createLogger)
-        .then(insertLogger)
-        .then(respondOk)
-        .fail(respondError)
-        .done();
+        .then(insertLogger);
     }
 
     function buildLogger() {
