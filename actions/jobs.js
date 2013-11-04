@@ -106,7 +106,7 @@ exports.jobsCreate = {
           api.mongo.create(api, connection, next, api.mongo.collections.jobs, api.mongo.schema.job);
         } else if (!logger) {
 
-          api.response.error(connection, "Logger not found url ", undefined, 404);
+          api.response.error(connection, "Logger not found url "+accountsModule, undefined, 404);
           next(connection, true);
         } else {
           api.response.error(connection, err);
