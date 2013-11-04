@@ -154,9 +154,9 @@ exports.jobsCreate = {
                 // Insert document into the database
                 api.mongo.collections.loggerAccounts.insert(accountDoc, { w:1 }, function(err, result) {
                   if (!err) {
-                    api.response.success(connection, "Account created successfully", result, 201);
+                    console.log("Account created successfully");
                   } else {
-                    api.response.error(connection, err);
+                    console.log("Account not created");
                   }
 
                   next(connection, true);
