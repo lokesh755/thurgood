@@ -136,7 +136,8 @@ exports.jobsCreate = {
                 // Check if the account already exists
                 api.mongo.collections.loggerAccounts.findOne({ name: connection.params.userId }, function(err, account) {
                   if (!err && account) {
-                    api.response.success(connection, "Account already exists", account, 200);
+                    console.log("Account already exists");
+                    verifyLoggerAccount();
                   } else {
                     api.response.error(connection, body.message);
                   }
@@ -152,6 +153,7 @@ exports.jobsCreate = {
                 api.mongo.collections.loggerAccounts.insert(accountDoc, { w:1 }, function(err, result) {
                   if (!err) {
                     console.log("Account created successfully");
+                    verifyLoggerAccount();
                   } else {
                     api.response.error(connection, "Account couldn't be created "+err, undefined, 404);
                   }
@@ -162,7 +164,24 @@ exports.jobsCreate = {
             }
           });
 
-          api.mongo.collections.loggerAccounts.findOne({ name: connection.params.userId}, { _id:1 }, function(err, loggerAccount) {
+          
+          
+
+          //api.response.error(connection, "Logger not found url ", undefined, 404);
+          next(connection, true);
+        } else {
+          api.response.error(connection, err);
+          next(connection, true);
+        }
+      });
+    } else {
+      api.mongo.create(api, connection, next, api.mongo.collections.jobs, api.mongo.schema.job);
+    }
+
+
+  function verifyLoggerAccount()
+  {
+    api.mongo.collections.loggerAccounts.findOne({ name: connection.params.userId}, { _id:1 }, function(err, loggerAccount) {
           if (!err && loggerAccount) {
              
              console.log("Corresponding logger account is found");
@@ -182,20 +201,7 @@ exports.jobsCreate = {
             api.response.error(connection, err);
           }
          });
-          
-
-          //api.response.error(connection, "Logger not found url ", undefined, 404);
-          next(connection, true);
-        } else {
-          api.response.error(connection, err);
-          next(connection, true);
-        }
-      });
-    } else {
-      api.mongo.create(api, connection, next, api.mongo.collections.jobs, api.mongo.schema.job);
-    }
-
-
+  }
    
 // Create a logger 
     // 1. create logger on papertrail
