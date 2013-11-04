@@ -136,8 +136,8 @@ configData.mongo = {
 ////////////////
 
 configData.papertrail = {
-  accountsUrl: process.env.PAPERTRAIL_DIST_URL + "/accounts",
-  systemsUrl: process.env.PAPERTRAIL_DIST_URL + "/systems",
+  accountsUrl: "https://papertrailapp.com/api/v1" + "/accounts",
+  systemsUrl: "https://papertrailapp.com/api/v1"  + "/systems",
   auth: {
     username: process.env.PAPERTRAIL_DIST_USERNAME,
     password: process.env.PAPERTRAIL_DIST_PASSWORD
