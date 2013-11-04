@@ -185,7 +185,9 @@ exports.jobsCreate = {
           if (!err && loggerAccount) {
              
              console.log("Corresponding logger account is found");
+             console.log("creating loggeraccountId");
              connection.params.loggerAccountId = new String(loggerAccount._id);
+             console.log("created");
              createLogger();
 
              
@@ -208,6 +210,7 @@ exports.jobsCreate = {
     // 2. create logger in the db
     // 3. respond with the created logger
     function createLogger() {
+      console.log("Entered logger");
       Q.all([api, buildLogger()])
         .spread(papertrail.createLogger)
         .then(insertLogger)
