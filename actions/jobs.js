@@ -156,16 +156,46 @@ exports.jobsCreate = {
                   if (!err) {
                     console.log("Account created successfully");
                   } else {
-                    console.log("Account not created");
+                    api.response.error(connection, "Account couldn't be created "+err, undefined, 404);
                   }
 
-                  next(connection, true);
+                  
                 });
               }
             }
           });
 
-        
+          api.mongo.collections.loggerAccounts.findOne({ name: connection.params.userId}, { _id:1 }, function(err, loggerAccount) {
+          if (!err && loggerAccount) {
+             
+             console.log("Corresponding logger account is found");
+             connection.params.loggerAccountId = new String(loggerAccount._id);
+             createLogger();
+
+             api.mongo.collections.loggerSystems.findOne({ name: connection.params.logger }, { _id:1 }, function(err, loggerSystem) {
+             
+               if (!err && loggerSystem) {
+                  connection.params.loggerId = new String(loggerSystem._id);
+                  api.mongo.create(api, connection, next, api.mongo.collections.jobs, api.mongo.schema.job);
+                  console.log("Job created successfully");
+                } else if (!logger) {
+                  api.response.error(connection, err);
+                }
+             
+             });
+          }
+          else if (!loggerAccount) {
+          
+             console.log("corresponding loggeraccount is not found");
+             api.response.error(connection, "Account couldn't be found "+err, undefined, 404);
+          
+          }  
+          else
+          {
+            api.response.error(connection, err);
+          }
+         });
+          
 
           //api.response.error(connection, "Logger not found url ", undefined, 404);
           next(connection, true);
@@ -196,7 +226,7 @@ exports.jobsCreate = {
     function buildLogger() {
       var logger = api.mongo.schema.new(api.mongo.schema.loggerSystem);
       logger.name = connection.params.logger;
-      logger.loggerAccountId = connection.params.loggerId;
+      logger.loggerAccountId = connection.params.loggerAccountId;
       logger.papertrailId = connection.params.papertrailId || crypto.randomBytes(16).toString('hex');
       return logger;
     }
