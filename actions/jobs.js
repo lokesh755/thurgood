@@ -130,24 +130,21 @@ exports.jobsCreate = {
               api.response.error(connection, err);
               next(connection, true);
             } else {
-              body = '{"id":"w34234","api-token":"a234234dfasdf","message":"lokeshisworking"}';
+              
               body = JSON.parse(body);
-              // if (!body.id || !body.api_token) {
-              //   // Check if the account already exists
-              //   api.mongo.collections.loggerAccounts.findOne({ name: connection.params.username }, function(err, account) {
-              //     if (!err && account) {
-              //       api.response.success(connection, "Account already exists", account, 200);
-              //     } else {
-              //       api.response.error(connection, body.message);
-              //     }
+              if (!body.id || !body.api_token) {
+                // Check if the account already exists
+                api.mongo.collections.loggerAccounts.findOne({ name: connection.params.userId }, function(err, account) {
+                  if (!err && account) {
+                    api.response.success(connection, "Account already exists", account, 200);
+                  } else {
+                    api.response.error(connection, body.message);
+                  }
 
-              //     next(connection, true);
-              //   });
-              // } else 
+                  next(connection, true);
+                });
+              } else 
               {
-                console.log("entered here");
-                body.id = "23432423";
-                body.api_token = "asdfasdfa2432";
                 accountDoc.papertrailId = body.id;
                 accountDoc.papertrailApiToken = body.api_token;
                 
