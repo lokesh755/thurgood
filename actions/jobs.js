@@ -41,7 +41,7 @@ exports.jobsComplete = {
   outputExample: {},
   version: 1.0,
   run: function(api, connection, next) {
-    var selector;
+    var selector, collection = api.mongo.collections.loggerSystems;
 
     // Validate id and build selector
     try {
