@@ -2,6 +2,7 @@ var ObjectID = require('mongodb').ObjectID;
 var amqp = require('amqp');
 var syslogProducer = require('glossy').Produce;
 var glossy = new syslogProducer({ type: 'BSD' });
+var accountsModule = require('./accounts');
 
 
 /**
