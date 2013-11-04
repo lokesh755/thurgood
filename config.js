@@ -141,7 +141,6 @@ configData.papertrail = {
   auth: {
     username: "lokesh755@gmail.com",
     password: "harshita755"
-
   }
 };
 
